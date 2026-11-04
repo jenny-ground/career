@@ -16,6 +16,7 @@
   --signal: #A85F00;
   --signal-soft: #FBEFDD;
   --ok: #2E7D4F;
+  --ok-soft: #E1F1E7;
   --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -23,13 +24,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #0F161D; --surface: #17212B; --ink: #E5EBF0; --muted: #96A4B2; --line: #2A3743;
-    --accent: #77ABEA; --accent-soft: #1A2C42; --signal: #E8A34C; --signal-soft: #33260F; --ok: #6CC18F;
+    --accent: #77ABEA; --accent-soft: #1A2C42; --signal: #E8A34C; --signal-soft: #33260F; --ok: #6CC18F; --ok-soft: #17301F;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #0F161D; --surface: #17212B; --ink: #E5EBF0; --muted: #96A4B2; --line: #2A3743;
-  --accent: #77ABEA; --accent-soft: #1A2C42; --signal: #E8A34C; --signal-soft: #33260F; --ok: #6CC18F;
+  --accent: #77ABEA; --accent-soft: #1A2C42; --signal: #E8A34C; --signal-soft: #33260F; --ok: #6CC18F; --ok-soft: #17301F;
   color-scheme: dark;
 }
 
@@ -56,13 +57,18 @@ p { margin: 0; }
 .eyebrow { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .muted { color: var(--muted); }
 .small { font-size: .86rem; }
+.stack { display: grid; gap: 12px; }
 
 /* Header */
 header.top { background: var(--surface); border-bottom: 1px solid var(--line); }
 header.top .wrap { padding-block: 28px 20px; display: grid; gap: 10px; }
 .lede { color: var(--muted); max-width: 60ch; }
-.meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; align-items: center; }
 .tag { font-family: var(--f-mono); font-size: .72rem; padding: 3px 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); }
+.sync { font-size: .78rem; display: inline-flex; gap: 6px; align-items: center; color: var(--muted); }
+.sync::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.sync[data-s="ok"]::before { background: var(--ok); }
+.sync[data-s="local"]::before { background: var(--signal); }
 
 /* Sticky tabs */
 nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
@@ -81,6 +87,7 @@ section { display: grid; gap: 16px; scroll-margin-top: 64px; }
 /* Routine */
 .routine { display: grid; gap: 8px; }
 .step { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.step > div { min-width: 0; }
 .step input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--ok); }
 .step .mins { font-family: var(--f-mono); font-size: .8rem; color: var(--accent); white-space: nowrap; }
 .step.done { opacity: .62; }
@@ -90,50 +97,105 @@ section { display: grid; gap: 16px; scroll-margin-top: 64px; }
 .progress { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: var(--muted); }
 .bar { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
 .bar span { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.day { display: grid; gap: 4px; justify-items: center; font-size: .72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.day .cell { width: 100%; max-width: 44px; aspect-ratio: 1; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; font-family: var(--f-mono); font-size: .75rem; color: var(--muted); }
+.day .cell[data-n="1"], .day .cell[data-n="2"], .day .cell[data-n="3"] { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.day .cell[data-n="4"] { background: var(--ok); color: var(--surface); border-color: transparent; }
+.day.today .cell { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-/* Phrase groups */
-.group { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+/* Sentence rows (shared everywhere) */
+.group { display: grid; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .group > .ghead { padding: 10px 14px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: .9rem; }
-.row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line); align-items: center; }
-.group > .ghead + .row { border-top: 0; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line); align-items: start; }
+.group > .row:first-child, .group > .ghead + .row { border-top: 0; }
+.row > div { min-width: 0; display: grid; gap: 3px; }
 .row .en { font-weight: 500; }
 .row .ko { color: var(--muted); font-size: .88rem; }
-.row > div { min-width: 0; }
+.row .ctl { display: flex; gap: 6px; }
+.alt { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-top: 4px; padding: 8px 10px; border-radius: 6px; background: var(--paper); font-size: .86rem; }
+.alt > span { min-width: 0; }
+.alt b { font-weight: 600; color: var(--muted); font-size: .78rem; margin-right: 4px; }
+.alt .say { width: 30px; height: 30px; }
 
-.say { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--accent); display: grid; place-items: center; cursor: pointer; }
+.use { justify-self: start; font-size: .7rem; font-weight: 600; letter-spacing: .02em; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.use.talk { color: var(--signal); }
+.use.mail { color: var(--accent); }
+.use.both { color: var(--muted); }
+.legend { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: .86rem; }
+.legend div { display: grid; grid-template-columns: 76px 1fr; gap: 8px; align-items: center; }
+.legend .use { justify-self: start; }
+
+.say { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--accent); display: grid; place-items: center; cursor: pointer; padding: 0; }
 .say:hover, .say:focus-visible { border-color: var(--accent); outline: none; }
 .say.playing { background: var(--accent); color: var(--surface); border-color: var(--accent); }
 .say svg { width: 16px; height: 16px; }
 .no-tts .say { display: none; }
+.flag { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--muted); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.flag svg { width: 16px; height: 16px; }
+.flag[aria-pressed="true"] { background: var(--signal); border-color: var(--signal); color: var(--surface); }
 
-/* Vocab */
-.vtools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* Buttons */
 .btn { font: inherit; font-size: .85rem; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 7px 12px; border-radius: 6px; cursor: pointer; }
 .btn:hover, .btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
 .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn.primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.btn.primary:hover { opacity: .9; color: var(--surface); }
+.btn:disabled { opacity: .5; cursor: default; }
+
+/* Note */
+.note-card { background: var(--surface); border: 1.5px solid var(--ink); border-radius: 4px; }
+.note-head { display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1.5px solid var(--ink); font-family: var(--f-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; flex-wrap: wrap; }
+.note-title { padding: 14px 14px 4px; display: grid; gap: 4px; }
+.note-card .row:first-of-type { border-top: 1px solid var(--line); }
+.task { border-top: 1.5px solid var(--ink); padding: 14px; display: grid; gap: 10px; }
+.task .q { font-weight: 600; }
+.task .hint { color: var(--muted); font-size: .86rem; }
+.task textarea { font: inherit; width: 100%; min-height: 96px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); resize: vertical; }
+.task textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.task .tbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.task .tstat { color: var(--muted); font-size: .82rem; }
+.feedback { background: var(--ok-soft); border-radius: 6px; padding: 12px; display: grid; gap: 8px; }
+.feedback .lbl { font-size: .78rem; font-weight: 600; color: var(--ok); }
+.feedback .fx { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
+.feedback .fx > div { min-width: 0; }
+.feedback .exp { font-size: .86rem; color: var(--muted); white-space: pre-wrap; }
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 8px; padding: 18px 14px; display: grid; gap: 8px; color: var(--muted); font-size: .9rem; }
+.empty code { font-family: var(--f-mono); color: var(--accent); font-size: .86rem; }
+
+/* Review */
+.rv .en { display: none; }
+.rv.shown .en { display: block; }
+.rv .ko { color: var(--ink); font-size: .95rem; font-weight: 500; }
+.rv .reveal { justify-self: start; }
+.rv.shown .reveal { display: none; }
+.rv .say { visibility: hidden; }
+.rv.shown .say { visibility: visible; }
+
+/* Vocab */
+.vtools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .vcount { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); margin-left: auto; }
 .vocab { display: grid; gap: 8px; }
 .term { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
-.term > div { min-width: 0; }
-.term .word { font-family: var(--f-mono); font-size: 1rem; color: var(--ink); }
-.term .mean { color: var(--signal); font-weight: 600; font-size: .92rem; }
-.term .ex { color: var(--muted); font-size: .88rem; margin-top: 2px; }
+.term > div { min-width: 0; display: grid; gap: 2px; }
+.term .word { font-family: var(--f-mono); font-size: 1rem; }
+.term .mean { color: var(--signal); font-weight: 600; font-size: .92rem; justify-self: start; }
+.term .ex { color: var(--muted); font-size: .88rem; }
 .term .actions { display: flex; gap: 6px; align-items: start; }
-.known { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.known { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--muted); cursor: pointer; display: grid; place-items: center; padding: 0; }
 .known svg { width: 16px; height: 16px; }
 .known[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: var(--surface); }
 .hide-mean .term .mean { color: transparent; background: var(--line); border-radius: 3px; user-select: none; cursor: pointer; }
 .hide-mean .term .mean.peek { color: var(--signal); background: transparent; }
 .vsub { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 
-/* Self-intro waybill */
+/* Self-intro */
 .waybill { background: var(--surface); border: 1.5px solid var(--ink); border-radius: 4px; }
 .wb-head { display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1.5px solid var(--ink); font-family: var(--f-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; flex-wrap: wrap; }
-.wb-field { padding: 12px 14px; border-bottom: 1px dashed var(--line); display: grid; gap: 6px; }
+.wb-field { padding: 12px 14px; display: grid; gap: 6px; }
 .wb-field label { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .wb-field input { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); width: 100%; }
 .wb-field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-.waybill .row:first-of-type { border-top: 0; }
 .wb-foot { padding: 12px 14px; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1.5px solid var(--ink); }
 
 /* Emails */
@@ -143,15 +205,19 @@ section { display: grid; gap: 16px; scroll-margin-top: 64px; }
 .mail summary::after { content: "+"; font-family: var(--f-mono); color: var(--accent); font-size: 1.1rem; }
 .mail[open] summary::after { content: "−"; }
 .mail summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.mail .use { color: var(--muted); font-size: .85rem; font-weight: 400; }
-.mail pre { margin: 0; padding: 14px; border-top: 1px solid var(--line); background: var(--paper); font-family: var(--f-mono); font-size: .82rem; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.mail .when { color: var(--muted); font-size: .85rem; font-weight: 400; }
+.mbody { border-top: 1px solid var(--line); background: var(--paper); padding: 6px 0; }
+.mline { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 3px 14px; min-height: 38px; }
+.mline > span { min-width: 0; font-family: var(--f-mono); font-size: .82rem; line-height: 1.5; word-break: break-word; }
+.mline.gap { min-height: 10px; padding: 0; }
+.mline .say { width: 30px; height: 30px; }
 .mail .mfoot { padding: 10px 14px; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .mail .note { color: var(--muted); font-size: .84rem; flex: 1 1 200px; }
 .tip { background: var(--signal-soft); border-radius: 8px; padding: 12px 14px; font-size: .9rem; }
 .tip strong { color: var(--signal); }
 
 /* Roadmap */
-.road { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 6px; }
+.road { display: grid; border-left: 2px solid var(--line); margin-left: 6px; }
 .leg { position: relative; padding: 0 0 22px 22px; display: grid; gap: 4px; }
 .leg::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--accent); }
 .leg:last-child { padding-bottom: 0; }
@@ -165,8 +231,14 @@ section { display: grid; gap: 16px; scroll-margin-top: 64px; }
 .prompt code { font-family: var(--f-mono); font-size: .86rem; color: var(--accent); word-break: break-word; }
 .prompt p { color: var(--muted); font-size: .86rem; }
 
-footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
+/* Archive */
+.arch { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.arch summary { cursor: pointer; padding: 12px 14px; display: flex; gap: 10px; justify-content: space-between; list-style: none; }
+.arch summary::-webkit-details-marker { display: none; }
+.arch summary .d { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.arch .group { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
 
+footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 6px; font-size: .85rem; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
 .toast.show { opacity: 1; }
 
@@ -178,23 +250,27 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
   <div class="wrap">
     <span class="eyebrow">Shipper · Carrier · Conference call</span>
     <h1>TMS 컨콜 영어 노트</h1>
-    <p class="lede">카길과의 컨콜을 위한 하루 30분 학습 노트예요. 운송·TMS 업무에서 실제로 쓰는 표현만 모았어요. 스피커 버튼을 누르면 원어민 발음으로 들을 수 있어요.</p>
+    <p class="lede">카길 컨콜을 위한 하루 30분 학습 노트예요. 매일 노트와 공부 기록은 계정에 저장되고, 어제 배운 문장은 다음 날 복습으로 다시 나와요. 모든 영어 문장은 스피커 버튼으로 들을 수 있어요.</p>
     <div class="meta-row">
       <span class="tag">하루 30분</span>
       <span class="tag">8주 과정</span>
-      <span class="tag">번역기 없이 메일 쓰기가 목표</span>
+      <span class="sync" id="sync" data-s="wait">저장소 연결 중</span>
     </div>
   </div>
 </header>
 
 <nav class="tabs" aria-label="섹션">
   <div class="wrap">
-    <a href="#today">오늘 루틴</a>
-    <a href="#phrases">생존 표현</a>
-    <a href="#vocab">업무 용어</a>
+    <a href="#today">오늘</a>
+    <a href="#review">어제 복습</a>
+    <a href="#note">오늘 노트</a>
+    <a href="#repeat">반복 표현</a>
+    <a href="#phrases">표현 사전</a>
+    <a href="#vocab">용어</a>
     <a href="#intro">자기소개</a>
     <a href="#mail">메일</a>
-    <a href="#plan">8주 계획</a>
+    <a href="#archive">지난 노트</a>
+    <a href="#plan">계획</a>
     <a href="#claude">Claude 활용</a>
     <div class="speed" role="group" aria-label="읽기 속도">
       <button type="button" id="spd-slow" data-rate="0.7" aria-pressed="true">천천히</button>
@@ -210,19 +286,52 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
       <div class="sec-head">
         <span class="eyebrow" id="today-date">Today</span>
         <h2>오늘의 30분</h2>
-        <p class="muted small">매일 같은 순서로 하세요. 체크는 이 휴대폰에만 저장되고 다음 날 초기화돼요.</p>
+        <p class="muted small">위에서부터 순서대로 하세요. 체크한 기록은 날짜별로 저장돼요. 다음 날이 되면 새 체크리스트가 열리고, 지난 기록은 아래 7일 표에 남아요.</p>
       </div>
       <div class="progress"><div class="bar"><span id="bar"></span></div><span id="bar-txt">0 / 4</span></div>
       <div class="routine" id="routine"></div>
+      <div class="week" id="week" aria-label="최근 7일 기록"></div>
+    </section>
+
+    <section id="review">
+      <div class="sec-head">
+        <span class="eyebrow" id="review-date">Review</span>
+        <h2>어제 복습</h2>
+        <p class="muted small">한국어를 보고 먼저 영어로 소리 내 말해보세요. 그다음 '영어 보기'를 눌러 맞는지 확인하고 들어보세요.</p>
+      </div>
+      <div id="review-body"></div>
+    </section>
+
+    <section id="note">
+      <div class="sec-head">
+        <span class="eyebrow">Daily note</span>
+        <h2>오늘 노트</h2>
+        <p class="muted small">Claude가 매일 써주는 노트예요. 쓰기 과제는 여기에 답을 저장한 뒤 Claude에게 "첨삭해줘"라고 보내면, 첨삭 결과가 이 노트에 붙어요.</p>
+      </div>
+      <div id="note-body"></div>
+    </section>
+
+    <section id="repeat">
+      <div class="sec-head">
+        <span class="eyebrow">Daily repeat</span>
+        <h2>오늘의 반복 표현</h2>
+        <p class="muted small">컨콜 기본 표현을 매일 6개씩 돌려가며 연습해요. 어제 나온 표현 중 2개는 오늘도 다시 나오고, 깃발을 꽂은 표현은 외울 때까지 매일 나와요.</p>
+      </div>
+      <div class="group" id="repeat-list"></div>
     </section>
 
     <section id="phrases">
       <div class="sec-head">
-        <span class="eyebrow">Survival phrases</span>
-        <h2>컨콜 생존 표현</h2>
-        <p class="muted small">못 알아들어도 괜찮아요. 아래 문장으로 다시 물어보면 돼요. 첫 2주 동안 이 15개만 입에 붙여도 컨콜이 훨씬 편해져요.</p>
+        <span class="eyebrow">Phrasebook</span>
+        <h2>표현 사전</h2>
+        <p class="muted small">모든 문장에 어디서 쓰는지 표시했어요. 대화 전용 문장은 메일에서 쓸 문장을, 메일 전용 문장은 말할 때 쓸 문장을 같이 붙였어요.</p>
       </div>
-      <div id="phrase-groups" style="display:grid;gap:12px"></div>
+      <div class="legend">
+        <div><span class="use both">대화·메일</span><span>말할 때도, 메일에 써도 자연스러워요.</span></div>
+        <div><span class="use talk">대화</span><span>말할 때만 써요. 메일에 쓰면 어색하거나 너무 가벼워요.</span></div>
+        <div><span class="use mail">메일</span><span>글로만 써요. 말로 하면 딱딱하게 들려요.</span></div>
+      </div>
+      <div id="phrase-groups" class="stack"></div>
       <p class="tip"><strong>컨콜 팁</strong> · Teams나 Zoom의 실시간 자막(Live captions)을 켜세요. 들리지 않는 단어를 눈으로 잡을 수 있어요.</p>
     </section>
 
@@ -252,7 +361,7 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
           <label for="my-name">Your name (영어 이름 또는 본명)</label>
           <input id="my-name" type="text" placeholder="예: Jiwon Kim" autocomplete="name">
         </div>
-        <div id="intro-lines"></div>
+        <div class="group" style="border:0;border-top:1px solid var(--line);border-radius:0" id="intro-lines"></div>
         <div class="wb-foot">
           <button type="button" class="btn" id="intro-all">전체 듣기</button>
           <button type="button" class="btn" id="intro-copy">영어 문장 복사</button>
@@ -264,10 +373,19 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
       <div class="sec-head">
         <span class="eyebrow">Email templates</span>
         <h2>자주 쓰는 메일 4종</h2>
-        <p class="muted small">[ ] 안만 바꿔 쓰세요. 번역기 대신 이 틀을 쓰는 연습이 쓰기 실력을 가장 빨리 올려요.</p>
+        <p class="muted small">[ ] 안만 바꿔 쓰세요. 한 줄씩 들을 수도 있고, 전체를 들을 수도 있어요.</p>
       </div>
-      <div id="mails" style="display:grid;gap:10px"></div>
+      <div id="mails" class="stack"></div>
       <p class="tip"><strong>시차 주의</strong> · 미국 중부 시간(CST)은 지금 한국보다 15시간 느려요(서머타임이 시작되는 3월부터는 14시간). 한국 오전 9시 = 미국 중부 전날 오후 6시. 상대방이 어느 지역인지 먼저 확인하세요.</p>
+    </section>
+
+    <section id="archive">
+      <div class="sec-head">
+        <span class="eyebrow">Archive</span>
+        <h2>지난 노트</h2>
+        <p class="muted small">지금까지 받은 노트가 날짜별로 모두 저장돼요.</p>
+      </div>
+      <div id="archive-list" class="stack"></div>
     </section>
 
     <section id="plan">
@@ -278,9 +396,9 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
       </div>
       <div class="road">
         <div class="leg"><span class="wk">1–2주 · 생존 세트</span>
-          <ul><li>자기소개 통째로 외우기</li><li>컨콜 생존 표현 15개</li><li>운송 기본 용어 14개</li></ul></div>
+          <ul><li>자기소개 통째로 외우기</li><li>컨콜 기본 표현 매일 반복</li><li>운송 기본 용어 14개</li></ul></div>
         <div class="leg"><span class="wk">3–4주 · 메일 쓰기</span>
-          <ul><li>메일 템플릿 4종을 번역기 없이 바꿔 쓰기</li><li>매일 메일 3문장 쓰고 Claude에게 첨삭받기</li></ul></div>
+          <ul><li>메일 템플릿 4종을 번역기 없이 바꿔 쓰기</li><li>매일 쓰기 과제 저장하고 첨삭받기</li></ul></div>
         <div class="leg"><span class="wk">5–6주 · 업무 설명하기</span>
           <ul><li>시스템 용어 10개</li><li>배차 흐름, 정산 흐름을 영어로 1분 동안 설명하기</li><li>화면 공유하며 기능 설명하는 표현</li></ul></div>
         <div class="leg"><span class="wk">7–8주 · 실전 롤플레이</span>
@@ -308,225 +426,411 @@ footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
 <script>
 (function () {
   "use strict";
-  var store = {
+  /* ---------- helpers ---------- */
+  var local = {
     get: function (k, d) { try { var v = localStorage.getItem("tmsen:" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
     set: function (k, v) { try { localStorage.setItem("tmsen:" + k, JSON.stringify(v)); } catch (e) {} }
   };
   var ICON_SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
   var ICON_CHK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function toast(msg) { var t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 1600); }
+  var ICON_FLAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5" fill="currentColor"/></svg>';
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function $(id) { return document.getElementById(id); }
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 1800); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function ymd(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  var now = new Date();
+  var TODAY = ymd(now);
+  function dayNum(key) { var p = key.split("-"); return Math.floor(Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5); }
+  function fmtDate(key, opt) { var p = key.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString("ko-KR", opt || { month: "long", day: "numeric", weekday: "short" }); }
+  var USE = { both: "대화·메일", talk: "대화", mail: "메일" };
+  function useTag(u) { u = USE[u] ? u : "both"; return '<span class="use ' + u + '">' + USE[u] + "</span>"; }
 
-  /* ---------- Speech ---------- */
+  /* ---------- speech ---------- */
   var hasTTS = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
   if (!hasTTS) document.documentElement.classList.add("no-tts");
-  var rate = store.get("rate", 0.7);
-  var voice = null;
+  var rate = local.get("rate", 0.7), voice = null, playingBtn = null;
   function pickVoice() {
-    if (!hasTTS) return;
     var vs = speechSynthesis.getVoices() || [];
     voice = vs.filter(function (v) { return v.lang === "en-US"; })[0] || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
   }
   if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-  var playingBtn = null;
-  function speak(text, btn, onend) {
-    if (!hasTTS) return;
+  function clean(t) { return String(t).replace(/[\[\]]/g, "").replace(/–/g, " to "); }
+  function speak(text, btn) {
+    if (!hasTTS) { toast("이 기기에서는 음성 읽기를 지원하지 않아요"); return; }
     speechSynthesis.cancel();
     if (playingBtn) playingBtn.classList.remove("playing");
-    var u = new SpeechSynthesisUtterance(text);
+    var u = new SpeechSynthesisUtterance(clean(text));
     u.lang = "en-US"; u.rate = rate; if (voice) u.voice = voice;
     if (btn) { btn.classList.add("playing"); playingBtn = btn; }
-    u.onend = u.onerror = function () { if (btn) btn.classList.remove("playing"); if (onend) onend(); };
+    u.onend = u.onerror = function () { if (btn) btn.classList.remove("playing"); };
     speechSynthesis.speak(u);
   }
-  function sayBtn(text) { return '<button type="button" class="say" data-say="' + esc(text) + '" aria-label="듣기: ' + esc(text) + '">' + ICON_SPK + "</button>"; }
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest(".say"); if (!b) return;
-    speak(b.getAttribute("data-say"), b);
-  });
+  function sayBtn(text) { return '<button type="button" class="say" data-say="' + esc(text) + '" aria-label="듣기">' + ICON_SPK + "</button>"; }
+  document.addEventListener("click", function (e) { var b = e.target.closest(".say"); if (b) speak(b.getAttribute("data-say"), b); });
   var spdBtns = document.querySelectorAll(".speed button");
-  function setRate(r) { rate = r; store.set("rate", r); spdBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(parseFloat(b.dataset.rate) === r)); }); }
+  function setRate(r) { rate = r; local.set("rate", r); spdBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(parseFloat(b.dataset.rate) === r)); }); }
   spdBtns.forEach(function (b) { b.addEventListener("click", function () { setRate(parseFloat(b.dataset.rate)); }); });
   setRate(rate);
 
-  /* ---------- Today routine ---------- */
-  var today = new Date();
-  var dayKey = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  document.getElementById("today-date").textContent = today.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
+  function copy(text) {
+    var ok = function () { toast("복사했어요"); };
+    var fb = function () {
+      var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta); ok();
+    };
+    try { navigator.clipboard.writeText(text).then(ok, fb); } catch (e) { fb(); }
+  }
+
+  /* One sentence row: English + Korean + usage tag + optional alternative for the other medium. */
+  function sentenceRow(s, extra) {
+    var alt = "";
+    if (s.alt) alt = '<div class="alt"><span><b>' + (s.use === "talk" ? "메일에선" : "말할 땐") + "</b>" + esc(s.alt) + "</span>" + sayBtn(s.alt) + "</div>";
+    return '<div class="row"><div><div class="en">' + esc(s.en) + '</div><div class="ko">' + esc(s.ko) + "</div>" + useTag(s.use) + alt + '</div><div class="ctl">' + sayBtn(s.en) + (extra || "") + "</div></div>";
+  }
+
+  /* ---------- state (db when available, else this device) ---------- */
+  var db = null;
+  var state = { known: local.get("known", []), flags: local.get("flags", []), name: local.get("name", "") };
+  var logs = {}; logs[TODAY] = local.get("log:" + TODAY, []);
+  var notes = [];
+  var notesStatus = "wait";
+  function setSync(s, txt) { var el = $("sync"); el.dataset.s = s; el.textContent = txt; }
+
+  var stateTimer = null;
+  function saveState() {
+    local.set("known", state.known); local.set("flags", state.flags); local.set("name", state.name);
+    if (!db) return;
+    clearTimeout(stateTimer);
+    stateTimer = setTimeout(function () {
+      db.doc("state/main").set({ known: state.known, flags: state.flags, name: state.name, updatedAt: new Date().toISOString() })
+        .catch(function () { toast("저장하지 못했어요. 잠시 후 다시 시도해 주세요."); });
+    }, 600);
+  }
+  var logChain = Promise.resolve();
+  function saveLog() {
+    var steps = (logs[TODAY] || []).slice().sort();
+    local.set("log:" + TODAY, steps);
+    if (!db) return;
+    logChain = logChain.then(function () {
+      return db.doc("log/" + TODAY).set({ date: TODAY, steps: steps, updatedAt: new Date().toISOString() });
+    }).catch(function () { toast("기록을 저장하지 못했어요."); });
+  }
+
+  /* ---------- routine ---------- */
+  $("today-date").textContent = fmtDate(TODAY, { month: "long", day: "numeric", weekday: "long" });
   var steps = [
-    { m: "5분", t: "듣고 따라 말하기", d: "생존 표현이나 업무 용어 5개를 스피커로 듣고 3번씩 소리 내 따라 하세요." },
+    { m: "5분", t: "어제 복습", d: '<a href="#review">어제 노트</a>의 한국어를 보고 영어로 말해본 뒤, 들으면서 확인하세요.' },
+    { m: "5분", t: "반복 표현 따라 말하기", d: '<a href="#repeat">오늘의 반복 표현</a> 6개를 듣고 3번씩 소리 내 따라 하세요.' },
     { m: "10분", t: "듣기", d: '영어 자막을 켜고 5분 이내 영상 하나를 두 번 보세요. 예: <a href="https://www.youtube.com/results?search_query=business+english+conference+call+phrases" target="_blank" rel="noopener">컨콜 영어</a>, <a href="https://www.youtube.com/results?search_query=logistics+english+vocabulary" target="_blank" rel="noopener">물류 영어</a>' },
-    { m: "10분", t: "쓰기", d: "오늘 배운 표현으로 메일 3문장을 쓰고 Claude에게 첨삭받으세요." },
-    { m: "5분", t: "말하기", d: "자기소개를 소리 내 읽고 휴대폰으로 녹음해서 들어보세요." }
+    { m: "10분", t: "오늘 노트와 쓰기 과제", d: '<a href="#note">오늘 노트</a>를 들으며 읽고, 쓰기 과제 답을 저장한 뒤 Claude에게 "첨삭해줘"라고 보내세요.' }
   ];
-  var done = store.get("routine:" + dayKey, []);
-  var rEl = document.getElementById("routine");
+  var rEl = $("routine");
   rEl.innerHTML = steps.map(function (s, i) {
     return '<label class="step" for="rt-' + i + '"><input type="checkbox" id="rt-' + i + '" data-i="' + i + '"><div><h3>' + s.t + "</h3><p>" + s.d + '</p></div><span class="mins">' + s.m + "</span></label>";
   }).join("");
   function paintRoutine() {
-    var n = 0;
+    var done = logs[TODAY] || [], n = 0;
     rEl.querySelectorAll("input").forEach(function (c) { var on = done.indexOf(+c.dataset.i) > -1; c.checked = on; c.closest(".step").classList.toggle("done", on); if (on) n++; });
-    document.getElementById("bar").style.width = (n / steps.length * 100) + "%";
-    document.getElementById("bar-txt").textContent = n === steps.length ? "오늘 완료!" : n + " / " + steps.length;
+    $("bar").style.width = (n / steps.length * 100) + "%";
+    $("bar-txt").textContent = n === steps.length ? "오늘 완료!" : n + " / " + steps.length;
+    paintWeek();
   }
   rEl.addEventListener("change", function (e) {
-    var i = +e.target.dataset.i; var k = done.indexOf(i);
-    if (e.target.checked && k < 0) done.push(i); if (!e.target.checked && k > -1) done.splice(k, 1);
-    store.set("routine:" + dayKey, done); paintRoutine();
+    var i = +e.target.dataset.i, done = (logs[TODAY] || []).slice(), k = done.indexOf(i);
+    if (e.target.checked && k < 0) done.push(i);
+    if (!e.target.checked && k > -1) done.splice(k, 1);
+    logs[TODAY] = done; paintRoutine(); saveLog();
   });
-  paintRoutine();
+  function paintWeek() {
+    var html = "";
+    for (var i = 6; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i), k = ymd(d), n = (logs[k] || []).length;
+      html += '<div class="day' + (i === 0 ? " today" : "") + '"><span class="cell" data-n="' + n + '" title="' + k + '">' + (n ? n + "/4" : "") + "</span><span>" + d.toLocaleDateString("ko-KR", { weekday: "short" }) + "</span></div>";
+    }
+    $("week").innerHTML = html;
+  }
 
-  /* ---------- Phrases ---------- */
-  var phrases = [
+  /* ---------- phrasebook ---------- */
+  var phraseGroups = [
+    ["통화를 시작할 때", [
+      { id: "p01", en: "Hi everyone, can you hear me?", ko: "안녕하세요, 제 목소리 들리세요?", use: "talk" },
+      { id: "p02", en: "Thank you for joining.", ko: "참석해 주셔서 감사합니다.", use: "both", alt: "Thank you for joining the call today." },
+      { id: "p03", en: "Shall we get started?", ko: "시작할까요?", use: "talk" },
+      { id: "p04", en: "Can you see my screen?", ko: "제 화면 보이세요?", use: "talk" }]],
     ["못 알아들었을 때", [
-      ["Sorry, could you say that again?", "죄송한데, 다시 말씀해 주시겠어요?"],
-      ["Could you speak a little more slowly, please?", "조금만 천천히 말씀해 주시겠어요?"],
-      ["Sorry, the line is not very clear.", "연결 상태가 안 좋아서 잘 안 들려요."]]],
+      { id: "p05", en: "Sorry, could you say that again?", ko: "죄송한데, 다시 말씀해 주시겠어요?", use: "talk" },
+      { id: "p06", en: "Could you speak a little more slowly, please?", ko: "조금만 천천히 말씀해 주시겠어요?", use: "talk" },
+      { id: "p07", en: "Sorry, the line is not very clear.", ko: "연결 상태가 안 좋아서 잘 안 들려요.", use: "talk" },
+      { id: "p08", en: "Sorry, I'm not sure I understand.", ko: "죄송한데, 제가 잘 이해했는지 모르겠어요.", use: "talk", alt: "I'm not sure I understood correctly." }]],
     ["내용을 확인할 때", [
-      ["Just to confirm, you mean the pickup time, right?", "확인차 여쭤보면, 픽업 시간 말씀하시는 거죠?"],
-      ["So the deadline is next Friday, correct?", "그러니까 마감이 다음 주 금요일 맞죠?"],
-      ["Could you send that by email after the call?", "통화 끝나고 메일로 보내주실 수 있나요?"]]],
+      { id: "p09", en: "Just to confirm, you mean the pickup time, right?", ko: "확인차 여쭤보면, 픽업 시간 말씀하시는 거죠?", use: "talk", alt: "Just to confirm, do you mean the pickup time?" },
+      { id: "p10", en: "So the deadline is next Friday, correct?", ko: "그러니까 마감이 다음 주 금요일 맞죠?", use: "talk", alt: "Could you confirm that the deadline is next Friday?" },
+      { id: "p11", en: "Could you send that by email after the call?", ko: "통화 끝나고 메일로 보내주실 수 있나요?", use: "talk" },
+      { id: "p12", en: "Could you share the file?", ko: "파일 공유해 주실 수 있나요?", use: "both" }]],
     ["생각할 시간이 필요할 때", [
-      ["Give me a second, please.", "잠시만요."],
-      ["Let me check and get back to you.", "확인하고 다시 알려드릴게요."],
-      ["Can we discuss this internally first?", "내부적으로 먼저 논의해 봐도 될까요?"]]],
+      { id: "p13", en: "Give me a second, please.", ko: "잠시만요.", use: "talk" },
+      { id: "p14", en: "Let me check and get back to you.", ko: "확인하고 다시 알려드릴게요.", use: "both", alt: "I'll check and get back to you." },
+      { id: "p15", en: "Can we discuss this internally first?", ko: "내부적으로 먼저 논의해 봐도 될까요?", use: "talk", alt: "We would like to discuss this internally first." }]],
     ["의견을 말할 때", [
-      ["I think that works for us.", "저희 쪽은 괜찮을 것 같아요."],
-      ["I have a concern about the schedule.", "일정이 조금 걱정돼요."],
-      ["Let me share my screen.", "제 화면 공유할게요."]]],
+      { id: "p16", en: "I think that works for us.", ko: "저희 쪽은 괜찮을 것 같아요.", use: "both" },
+      { id: "p17", en: "I have a concern about the schedule.", ko: "일정이 조금 걱정돼요.", use: "both" },
+      { id: "p18", en: "Do you have any questions?", ko: "질문 있으신가요?", use: "both" },
+      { id: "p19", en: "Let me share my screen.", ko: "제 화면 공유할게요.", use: "talk" }]],
     ["마무리할 때", [
-      ["Let me summarize what we agreed.", "합의한 내용 정리해 볼게요."],
-      ["I'll send a follow-up email today.", "오늘 후속 메일 보내드릴게요."],
-      ["Thank you for your time. Talk to you next week.", "시간 내주셔서 감사합니다. 다음 주에 뵐게요."]]]
+      { id: "p20", en: "Let me summarize what we agreed.", ko: "합의한 내용 정리해 볼게요.", use: "talk", alt: "Here is a summary of what we agreed." },
+      { id: "p21", en: "I'll send a follow-up email today.", ko: "오늘 후속 메일 보내드릴게요.", use: "talk" },
+      { id: "p22", en: "Thank you for your time. Talk to you next week.", ko: "시간 내주셔서 감사합니다. 다음 주에 뵐게요.", use: "talk", alt: "Thank you for your time. I look forward to our next meeting." }]],
+    ["메일에서만 쓰는 표현", [
+      { id: "p23", en: "Please find the file attached.", ko: "첨부 파일 확인 부탁드립니다.", use: "mail", alt: "I'll send you the file." },
+      { id: "p24", en: "Please let me know if you have any questions.", ko: "궁금한 점 있으시면 알려주세요.", use: "mail", alt: "Any questions?" },
+      { id: "p25", en: "Sorry for the late reply.", ko: "답장이 늦어 죄송합니다.", use: "mail", alt: "Sorry I didn't get back to you sooner." },
+      { id: "p26", en: "I look forward to hearing from you.", ko: "답장 기다리겠습니다.", use: "mail", alt: "Talk to you soon." }]]
   ];
-  document.getElementById("phrase-groups").innerHTML = phrases.map(function (g) {
-    return '<div class="group"><div class="ghead">' + g[0] + "</div>" + g[1].map(function (p) {
-      return '<div class="row"><div><div class="en">' + esc(p[0]) + '</div><div class="ko">' + p[1] + "</div></div>" + sayBtn(p[0]) + "</div>";
-    }).join("") + "</div>";
-  }).join("");
+  var allPhrases = [];
+  phraseGroups.forEach(function (g) { g[1].forEach(function (p) { allPhrases.push(p); }); });
+  var phraseById = {}; allPhrases.forEach(function (p) { phraseById[p.id] = p; });
+  function flagBtn(id) { var on = state.flags.indexOf(id) > -1; return '<button type="button" class="flag" data-flag="' + id + '" aria-pressed="' + on + '" aria-label="매일 반복에 넣기">' + ICON_FLAG + "</button>"; }
+  function paintPhrases() {
+    $("phrase-groups").innerHTML = phraseGroups.map(function (g) {
+      return '<div class="group"><div class="ghead">' + g[0] + "</div>" + g[1].map(function (p) { return sentenceRow(p, flagBtn(p.id)); }).join("") + "</div>";
+    }).join("");
+  }
 
-  /* ---------- Vocab ---------- */
+  /* Daily repeat: a fixed shuffled order walked 4 steps a day with a 6-wide window,
+     so 2 phrases carry over from yesterday. Flagged phrases are always included. */
+  function seededOrder(n, seed) {
+    var a = []; for (var i = 0; i < n; i++) a.push(i);
+    var s = seed; function rnd() { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }
+    for (var j = n - 1; j > 0; j--) { var k = Math.floor(rnd() * (j + 1)); var t = a[j]; a[j] = a[k]; a[k] = t; }
+    return a;
+  }
+  var ORDER = seededOrder(allPhrases.length, 20261104);
+  function repeatSet(key) {
+    var d = dayNum(key), L = ORDER.length, out = [];
+    state.flags.slice(0, 3).forEach(function (id) { if (phraseById[id]) out.push(phraseById[id]); });
+    for (var k = 0; k < 6; k++) {
+      var p = allPhrases[ORDER[((d * 4 + k) % L + L) % L]];
+      if (out.indexOf(p) < 0) out.push(p);
+    }
+    return out;
+  }
+  function paintRepeat() {
+    var today = repeatSet(TODAY);
+    var y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    var ySet = repeatSet(ymd(y)).map(function (p) { return p.id; });
+    $("repeat-list").innerHTML = today.map(function (p) {
+      var label = state.flags.indexOf(p.id) > -1 ? "깃발" : (ySet.indexOf(p.id) > -1 ? "어제도 나옴" : "");
+      var row = sentenceRow(p, flagBtn(p.id));
+      return label ? row.replace('<div class="en">', '<span class="eyebrow">' + label + '</span><div class="en">') : row;
+    }).join("");
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-flag]"); if (!b) return;
+    var id = b.dataset.flag, i = state.flags.indexOf(id);
+    if (i > -1) state.flags.splice(i, 1); else state.flags.push(id);
+    saveState(); paintPhrases(); paintRepeat();
+    toast(i > -1 ? "매일 반복에서 뺐어요" : "외울 때까지 매일 반복해요");
+  });
+
+  /* ---------- vocab ---------- */
   var vocab = [
     ["운송 기본", [
-      ["shipper", "화주", "The shipper requested a pickup on Monday."],
-      ["consignee", "수하인 (받는 쪽)", "The consignee confirmed the delivery."],
-      ["carrier", "운송사", "We assign a carrier to each shipment."],
-      ["shipment", "운송 건, 화물", "This shipment is delayed by one day."],
-      ["dispatch", "배차", "The dispatch team assigns trucks every morning."],
-      ["pickup / delivery", "상차(픽업) / 배송", "Pickup is at 9 a.m. and delivery is at 3 p.m."],
-      ["lead time", "리드타임", "The lead time is three days."],
-      ["ETA", "도착 예정 시간 (Estimated Time of Arrival)", "What is the ETA for this truck?"],
-      ["POD", "배송 완료 증빙 (Proof of Delivery)", "The driver uploads the POD in the app."],
-      ["freight rate", "운임", "The freight rate depends on distance and weight."],
-      ["surcharge", "할증료", "There is a fuel surcharge this month."],
-      ["lane", "운송 구간 (출발지–도착지)", "We have ten trucks on this lane."],
-      ["FTL / LTL", "독차 / 혼적", "Is this an FTL or an LTL shipment?"],
-      ["tracking", "화물 추적", "Customers want real-time tracking."]]],
+      ["shipper", "화주", "The shipper requested a pickup on Monday.", "both"],
+      ["consignee", "수하인 (받는 쪽)", "The consignee confirmed the delivery.", "both"],
+      ["carrier", "운송사", "We assign a carrier to each shipment.", "both"],
+      ["shipment", "운송 건, 화물", "This shipment is delayed by one day.", "both"],
+      ["dispatch", "배차", "The dispatch team assigns trucks every morning.", "both"],
+      ["pickup / delivery", "상차(픽업) / 배송", "Pickup is at 9 a.m. and delivery is at 3 p.m.", "both"],
+      ["lead time", "리드타임", "The lead time is three days.", "both"],
+      ["ETA", "도착 예정 시간 (Estimated Time of Arrival)", "What is the ETA for this truck?", "both"],
+      ["POD", "배송 완료 증빙 (Proof of Delivery)", "The driver uploads the POD in the app.", "both"],
+      ["freight rate", "운임", "The freight rate depends on distance and weight.", "both"],
+      ["surcharge", "할증료", "There is a fuel surcharge this month.", "both"],
+      ["lane", "운송 구간 (출발지–도착지)", "We have ten trucks on this lane.", "both"],
+      ["FTL / LTL", "독차 / 혼적", "Is this an FTL or an LTL shipment?", "both"],
+      ["tracking", "화물 추적", "Customers want real-time tracking.", "both"]]],
     ["시스템·기획", [
-      ["requirement", "요구사항", "Could you share the requirements by email?"],
-      ["feature", "기능", "This feature is planned for the next release."],
-      ["workflow", "업무 흐름", "Let me explain the dispatch workflow."],
-      ["integration", "시스템 연동", "We need an API integration with your ERP."],
-      ["scope", "범위", "This is out of scope for phase one."],
-      ["settlement", "정산", "Settlement is done at the end of each month."],
-      ["go-live", "오픈, 가동", "The go-live date is March 2."],
-      ["UAT", "사용자 인수 테스트", "UAT will start next week."],
-      ["issue", "이슈, 문제", "We found an issue on the settlement screen."],
-      ["priority", "우선순위", "Which feature is the top priority?"]]]
+      ["requirement", "요구사항", "Could you share the requirements by email?", "talk"],
+      ["feature", "기능", "This feature is planned for the next release.", "both"],
+      ["workflow", "업무 흐름", "Let me explain the dispatch workflow.", "talk"],
+      ["integration", "시스템 연동", "We need an API integration with your ERP.", "both"],
+      ["scope", "범위", "This is out of scope for phase one.", "both"],
+      ["settlement", "정산", "Settlement is done at the end of each month.", "both"],
+      ["go-live", "오픈, 가동", "The go-live date is March 2.", "both"],
+      ["UAT", "사용자 인수 테스트", "UAT will start next week.", "both"],
+      ["issue", "이슈, 문제", "We found an issue on the settlement screen.", "both"],
+      ["priority", "우선순위", "Which feature is the top priority?", "both"]]]
   ];
-  var known = store.get("known", []);
-  var hideMean = store.get("hide", false), onlyUnknown = false;
+  var hideMean = local.get("hide", false), onlyUnknown = false;
   var total = vocab.reduce(function (n, g) { return n + g[1].length; }, 0);
-  var vEl = document.getElementById("vocab-list");
+  var vEl = $("vocab-list");
   vEl.innerHTML = vocab.map(function (g) {
     return '<div class="vsub">' + g[0] + "</div>" + g[1].map(function (w) {
-      return '<div class="term" data-w="' + esc(w[0]) + '"><div><div class="word">' + esc(w[0]) + '</div><div class="mean">' + esc(w[1]) + '</div><div class="ex">' + esc(w[2]) + '</div></div><div class="actions">' +
-        sayBtn(w[0].replace(" / ", ", ") + ". " + w[2]) + '<button type="button" class="known" aria-pressed="false" aria-label="외움 표시: ' + esc(w[0]) + '">' + ICON_CHK + "</button></div></div>";
+      return '<div class="term" data-w="' + esc(w[0]) + '"><div><div class="word">' + esc(w[0]) + '</div><div class="mean">' + esc(w[1]) + '</div><div class="ex">' + esc(w[2]) + "</div>" + useTag(w[3]) + '</div><div class="actions">' +
+        sayBtn(w[0].replace(" / ", ", ") + ". " + w[2]) + '<button type="button" class="known" aria-pressed="false" aria-label="외움 표시">' + ICON_CHK + "</button></div></div>";
     }).join("");
   }).join("");
   function paintVocab() {
     vEl.classList.toggle("hide-mean", hideMean);
-    document.getElementById("hide-btn").setAttribute("aria-pressed", String(hideMean));
-    document.getElementById("unknown-btn").setAttribute("aria-pressed", String(onlyUnknown));
+    $("hide-btn").setAttribute("aria-pressed", String(hideMean));
+    $("unknown-btn").setAttribute("aria-pressed", String(onlyUnknown));
     var n = 0;
     vEl.querySelectorAll(".term").forEach(function (t) {
-      var k = known.indexOf(t.dataset.w) > -1; if (k) n++;
+      var k = state.known.indexOf(t.dataset.w) > -1; if (k) n++;
       t.querySelector(".known").setAttribute("aria-pressed", String(k));
       t.hidden = onlyUnknown && k;
     });
-    document.getElementById("vcount").textContent = n + " / " + total + " 외움";
+    $("vcount").textContent = n + " / " + total + " 외움";
   }
   vEl.addEventListener("click", function (e) {
     var kb = e.target.closest(".known");
-    if (kb) { var w = kb.closest(".term").dataset.w; var i = known.indexOf(w); if (i > -1) known.splice(i, 1); else known.push(w); store.set("known", known); paintVocab(); return; }
+    if (kb) { var w = kb.closest(".term").dataset.w, i = state.known.indexOf(w); if (i > -1) state.known.splice(i, 1); else state.known.push(w); saveState(); paintVocab(); return; }
     var m = e.target.closest(".mean"); if (m && hideMean) m.classList.toggle("peek");
   });
-  document.getElementById("hide-btn").addEventListener("click", function () { hideMean = !hideMean; store.set("hide", hideMean); paintVocab(); });
-  document.getElementById("unknown-btn").addEventListener("click", function () { onlyUnknown = !onlyUnknown; paintVocab(); });
-  paintVocab();
+  $("hide-btn").addEventListener("click", function () { hideMean = !hideMean; local.set("hide", hideMean); paintVocab(); });
+  $("unknown-btn").addEventListener("click", function () { onlyUnknown = !onlyUnknown; paintVocab(); });
 
-  /* ---------- Self intro ---------- */
-  var nameEl = document.getElementById("my-name");
-  nameEl.value = store.get("name", "");
+  /* ---------- self intro ---------- */
+  var nameEl = $("my-name");
   var introLines = [
-    ["Hi, my name is {name}.", "안녕하세요, 저는 {name}입니다."],
-    ["I'm a planner for our TMS, our transportation management system.", "저는 저희 TMS(운송 관리 시스템) 기획자예요."],
-    ["I design features like dispatch, tracking, and freight settlement.", "배차, 화물 추적, 운임 정산 같은 기능을 설계해요."],
-    ["In this project, I will work on the requirements and screen design.", "이번 프로젝트에서는 요구사항과 화면 설계를 맡아요."],
-    ["My English is still improving, so I may ask you to repeat things.", "영어가 아직 서툴러서 다시 말씀해 달라고 할 수도 있어요."],
-    ["Thank you for your patience. I look forward to working with you.", "이해해 주셔서 감사하고, 함께 일하게 되어 기대돼요."]
+    { en: "Hi, my name is {name}.", ko: "안녕하세요, 저는 {name}입니다.", use: "both" },
+    { en: "I'm a planner for our TMS, our transportation management system.", ko: "저는 저희 TMS(운송 관리 시스템) 기획자예요.", use: "both" },
+    { en: "I design features like dispatch, tracking, and freight settlement.", ko: "배차, 화물 추적, 운임 정산 같은 기능을 설계해요.", use: "both" },
+    { en: "In this project, I will work on the requirements and screen design.", ko: "이번 프로젝트에서는 요구사항과 화면 설계를 맡아요.", use: "both" },
+    { en: "My English is still improving, so I may ask you to repeat things.", ko: "영어가 아직 서툴러서 다시 말씀해 달라고 할 수도 있어요.", use: "talk", alt: "My English is still improving, so please feel free to keep your emails short and simple." },
+    { en: "Thank you for your patience. I look forward to working with you.", ko: "이해해 주셔서 감사하고, 함께 일하게 되어 기대돼요.", use: "both" }
   ];
   function nm() { return nameEl.value.trim() || "Kim"; }
-  function introText(i) { return introLines[i][0].replace("{name}", nm()); }
-  var ilEl = document.getElementById("intro-lines");
-  function paintIntro() {
-    ilEl.innerHTML = introLines.map(function (l, i) {
-      var en = introText(i);
-      return '<div class="row"><div><div class="en">' + esc(en) + '</div><div class="ko">' + esc(l[1].replace("{name}", nm())) + "</div></div>" + sayBtn(en) + "</div>";
-    }).join("");
-  }
-  nameEl.addEventListener("input", function () { store.set("name", nameEl.value); paintIntro(); });
-  paintIntro();
-  document.getElementById("intro-all").addEventListener("click", function () {
-    if (!hasTTS) { toast("이 기기에서는 음성 읽기를 지원하지 않아요"); return; }
-    speak(introLines.map(function (_, i) { return introText(i); }).join(" "), null);
-  });
-  function copy(text, okMsg) {
-    var done = function () { toast(okMsg || "복사했어요"); };
-    try {
-      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
-    } catch (e) { fallbackCopy(text); done(); }
-  }
-  function fallbackCopy(text) {
-    var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
-    document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta);
-  }
-  document.getElementById("intro-copy").addEventListener("click", function () { copy(introLines.map(function (_, i) { return introText(i); }).join("\n")); });
+  function introLine(l) { return { en: l.en.replace("{name}", nm()), ko: l.ko.replace("{name}", nm()), use: l.use, alt: l.alt }; }
+  function paintIntro() { $("intro-lines").innerHTML = introLines.map(function (l) { return sentenceRow(introLine(l)); }).join(""); }
+  nameEl.addEventListener("input", function () { state.name = nameEl.value; saveState(); paintIntro(); });
+  $("intro-all").addEventListener("click", function () { speak(introLines.map(function (l) { return introLine(l).en; }).join(" "), null); });
+  $("intro-copy").addEventListener("click", function () { copy(introLines.map(function (l) { return introLine(l).en; }).join("\n")); });
 
-  /* ---------- Mails ---------- */
+  /* ---------- mails ---------- */
   var mails = [
     ["회의 요청", "컨콜 일정을 잡을 때", "Subject: Meeting request – TMS requirements\n\nHi [Name],\n\nCould we schedule a call to discuss the TMS requirements?\nI'm available on [Tuesday or Wednesday], [9–11 a.m.] (KST).\nPlease let me know what time works for you.\n\nBest regards,\n[Your name]", "KST = 한국 시간. 시간대를 꼭 같이 적어주세요."],
     ["내용 확인", "회의 내용이 헷갈릴 때", "Subject: Quick question about [topic]\n\nHi [Name],\n\nThank you for the call today.\nI'd like to confirm one point.\nDid you mean that [the pickup time will change to 10 a.m.]?\nPlease correct me if I misunderstood.\n\nBest regards,\n[Your name]", "컨콜에서 못 알아들은 부분은 이 메일로 확인하면 돼요."],
     ["자료 요청", "문서나 데이터가 필요할 때", "Subject: Request for [document]\n\nHi [Name],\n\nCould you share the [shipment data] by [Friday, May 8]?\nIt will help us prepare for the next meeting.\nThank you in advance.\n\nBest regards,\n[Your name]", "날짜는 '요일, 월 일' 순서로 쓰면 헷갈리지 않아요."],
     ["회의 후 요약", "컨콜이 끝난 직후", "Subject: Meeting summary – [date]\n\nHi all,\n\nThank you for joining the call today.\nHere is a short summary.\n\n1. [We agreed to add a POD upload feature.]\n2. [The go-live date is March 2.]\n\nNext steps:\n- [Our team] will [share the screen design] by [date].\n- [Your team] will [send the sample data] by [date].\n\nPlease let me know if I missed anything.\n\nBest regards,\n[Your name]", "이 메일을 먼저 보내면, 못 알아들은 부분을 상대가 바로잡아 줘요."]
   ];
-  document.getElementById("mails").innerHTML = mails.map(function (m, i) {
-    return '<details class="mail"' + (i === 0 ? " open" : "") + '><summary><span><strong>' + m[0] + '</strong> <span class="use">· ' + m[1] + "</span></span></summary><pre>" + esc(m[2]) + '</pre><div class="mfoot"><span class="note">' + m[3] + '</span><button type="button" class="btn" data-mail="' + i + '">복사</button></div></details>';
+  $("mails").innerHTML = mails.map(function (m, i) {
+    var lines = m[2].split("\n").map(function (l) {
+      if (!l.trim()) return '<div class="mline gap"></div>';
+      return '<div class="mline"><span>' + esc(l) + "</span>" + sayBtn(l.replace(/^Subject:\s*/, "Subject. ").replace(/^- /, "")) + "</div>";
+    }).join("");
+    return '<details class="mail"' + (i === 0 ? " open" : "") + '><summary><span><strong>' + m[0] + '</strong> <span class="when">· ' + m[1] + '</span></span></summary><div class="mbody">' + lines + '</div><div class="mfoot"><span class="note">' + m[3] + '</span><button type="button" class="btn" data-mall="' + i + '">전체 듣기</button><button type="button" class="btn" data-mail="' + i + '">복사</button></div></details>';
   }).join("");
-  document.getElementById("mails").addEventListener("click", function (e) { var b = e.target.closest("[data-mail]"); if (b) copy(mails[+b.dataset.mail][2]); });
+  $("mails").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-mail]"); if (b) { copy(mails[+b.dataset.mail][2]); return; }
+    var a = e.target.closest("[data-mall]"); if (a) speak(mails[+a.dataset.mall][2].replace(/^Subject:\s*/, "Subject. ").replace(/\n+/g, ". ").replace(/\.\s*\./g, "."), null);
+  });
 
-  /* ---------- Prompts ---------- */
+  /* ---------- notes ---------- */
+  function noteItems(n) { return Array.isArray(n.items) ? n.items : []; }
+  function paintNote() {
+    var el = $("note-body");
+    var n = notes.filter(function (x) { return x.id === TODAY; })[0];
+    if (!n) {
+      if (notesStatus === "wait") { el.innerHTML = '<div class="empty">노트를 불러오는 중이에요.</div>'; return; }
+      if (notesStatus === "off") { el.innerHTML = '<div class="empty">노트는 claude.ai에 로그인한 상태에서 이 페이지를 열어야 보여요.</div>'; return; }
+      if (notesStatus === "slow") { el.innerHTML = '<div class="empty">노트 저장소에 아직 연결되지 않았어요. 인터넷 연결을 확인해 주세요.</div>'; return; }
+      el.innerHTML = '<div class="empty"><strong style="color:var(--ink)">오늘 노트가 아직 없어요.</strong><span>Claude에게 아래처럼 보내면 오늘 노트가 여기에 저장돼요.</span><code>오늘 영어 공부하자</code></div>';
+      return;
+    }
+    var fb = n.feedback && n.feedback.corrected ? '<div class="feedback"><span class="lbl">Claude 첨삭</span><div class="fx"><div class="en">' + esc(n.feedback.corrected) + "</div>" + sayBtn(n.feedback.corrected) + "</div>" + (n.feedback.explain ? '<div class="exp">' + esc(n.feedback.explain) + "</div>" : "") + "</div>" : "";
+    var task = n.task && n.task.ko ? '<div class="task"><span class="eyebrow">Writing task</span><p class="q">' + esc(n.task.ko) + "</p>" + (n.task.hint ? '<p class="hint">힌트: ' + esc(n.task.hint) + "</p>" : "") +
+      '<label class="eyebrow" for="answer">내 답 (번역기 없이)</label><textarea id="answer" placeholder="영어로 써보세요. 틀려도 괜찮아요.">' + esc(n.answer || "") + '</textarea><div class="tbar"><button type="button" class="btn primary" id="save-answer">답 저장</button><span class="tstat" id="ans-stat">' + (n.answerAt ? "저장됨 · " + new Date(n.answerAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }) : "") + "</span></div>" + fb + "</div>" : "";
+    el.innerHTML = '<div class="note-card"><div class="note-head"><span>Day note</span><span>' + esc(fmtDate(n.id)) + '</span></div><div class="note-title"><h3>' + esc(n.title || "오늘의 표현") + "</h3>" + (n.focus ? '<p class="muted small">' + esc(n.focus) + "</p>" : "") + "</div>" +
+      noteItems(n).map(function (s) { return sentenceRow(s); }).join("") + task + "</div>";
+    var btn = $("save-answer");
+    if (btn) btn.addEventListener("click", function () {
+      var v = $("answer").value.trim(); if (!v) { toast("답을 먼저 써주세요"); return; }
+      if (!db) { toast("저장소에 연결되지 않아 저장할 수 없어요"); return; }
+      btn.disabled = true;
+      db.doc("notes/" + TODAY).update({ answer: v, answerAt: new Date().toISOString() })
+        .then(function () { toast("저장했어요. Claude에게 '첨삭해줘'라고 보내세요."); })
+        .catch(function () { toast("저장하지 못했어요. 다시 시도해 주세요."); })
+        .then(function () { btn.disabled = false; });
+    });
+  }
+  function paintReview() {
+    var el = $("review-body");
+    var prev = notes.filter(function (x) { return x.id < TODAY; })[0];
+    if (!prev) {
+      $("review-date").textContent = "Review";
+      el.innerHTML = '<div class="empty">' + (notesStatus === "ok" ? "아직 지난 노트가 없어요. 내일부터 오늘 배운 문장이 여기에 복습으로 나와요." : notesStatus === "off" ? "복습은 claude.ai에 로그인한 상태에서 이 페이지를 열어야 보여요." : "지난 노트를 불러오는 중이에요.") + "</div>";
+      return;
+    }
+    $("review-date").textContent = fmtDate(prev.id) + " 노트";
+    var items = noteItems(prev).slice();
+    if (prev.feedback && prev.feedback.corrected) items.push({ en: prev.feedback.corrected, ko: "어제 쓰기 과제: " + (prev.task && prev.task.ko ? prev.task.ko : ""), use: "mail" });
+    el.innerHTML = '<div class="group">' + items.map(function (s) {
+      return '<div class="row rv"><div><div class="ko">' + esc(s.ko) + '</div><button type="button" class="btn reveal">영어 보기</button><div class="en">' + esc(s.en) + "</div>" + useTag(s.use) + '</div><div class="ctl">' + sayBtn(s.en) + "</div></div>";
+    }).join("") + '</div><button type="button" class="btn" id="reveal-all" style="justify-self:start">전부 보기</button>';
+    $("reveal-all").addEventListener("click", function () { el.querySelectorAll(".rv").forEach(function (r) { r.classList.add("shown"); }); });
+  }
+  $("review-body").addEventListener("click", function (e) { var b = e.target.closest(".reveal"); if (b) b.closest(".rv").classList.add("shown"); });
+  function paintArchive() {
+    var el = $("archive-list");
+    var past = notes.filter(function (x) { return x.id !== TODAY; });
+    if (!past.length) { el.innerHTML = '<div class="empty">' + (notesStatus === "off" ? "지난 노트는 claude.ai에 로그인한 상태에서 보여요." : "지난 노트가 생기면 여기에 쌓여요.") + "</div>"; return; }
+    el.innerHTML = past.map(function (n) {
+      return '<details class="arch"><summary><strong>' + esc(n.title || "노트") + '</strong><span class="d">' + esc(fmtDate(n.id)) + '</span></summary><div class="group">' + noteItems(n).map(function (s) { return sentenceRow(s); }).join("") + "</div></details>";
+    }).join("");
+  }
+  function paintNotes() { paintNote(); paintReview(); paintArchive(); }
+
+  /* ---------- prompts ---------- */
   var prompts = [
-    ["오늘 영어 공부하자", "오늘의 30분 학습 내용을 받아요"],
-    ["이 메일 첨삭해줘: ", "쓴 영어 메일을 붙여서 보내세요"],
+    ["오늘 영어 공부하자", "오늘 노트가 이 페이지에 저장돼요"],
+    ["첨삭해줘", "저장한 쓰기 과제 답을 Claude가 읽고 첨삭을 붙여요"],
     ["컨콜 롤플레이 하자. 주제: 배차 요구사항 협의", "Claude가 카길 담당자 역할을 해요"],
     ["컨콜 준비해줘. 안건: ", "안건을 주면 예상 질문과 표현을 정리해요"],
     ["컨콜 복습하자. 메모: ", "회의 메모로 못 알아들은 부분을 풀어요"]
   ];
-  document.getElementById("prompts").innerHTML = prompts.map(function (p, i) {
+  $("prompts").innerHTML = prompts.map(function (p, i) {
     return '<div class="prompt"><div><code>' + esc(p[0]) + "</code><p>" + p[1] + '</p></div><button type="button" class="btn" data-prompt="' + i + '">복사</button></div>';
   }).join("");
-  document.getElementById("prompts").addEventListener("click", function (e) { var b = e.target.closest("[data-prompt]"); if (b) copy(prompts[+b.dataset.prompt][0]); });
+  $("prompts").addEventListener("click", function (e) { var b = e.target.closest("[data-prompt]"); if (b) copy(prompts[+b.dataset.prompt][0]); });
+
+  /* ---------- first paint (works without the store) ---------- */
+  nameEl.value = state.name;
+  paintRoutine(); paintPhrases(); paintRepeat(); paintVocab(); paintIntro(); paintNotes();
+
+  /* ---------- connect the store ---------- */
+  var slow = setTimeout(function () {
+    if (notesStatus === "wait") { notesStatus = "slow"; paintNotes(); setSync("local", "저장소 연결 지연 · 이 기기에 임시 저장"); }
+  }, 10000);
+  var claudeApi = window.claude;
+  if (!claudeApi || typeof claudeApi.use !== "function") {
+    clearTimeout(slow); notesStatus = "off"; paintNotes(); setSync("local", "이 기기에만 저장 중");
+    return;
+  }
+  claudeApi.use("db").then(function (d) {
+    if (!d) { clearTimeout(slow); notesStatus = "off"; paintNotes(); setSync("local", "이 기기에만 저장 중"); return; }
+    db = d;
+    db.collection("notes").orderBy("date", "desc").limit(120).onSnapshot(function (snap) {
+      notes = snap.docs.map(function (doc) { var o = Object.assign({}, doc.data()); o.id = doc.id; return o; });
+      if (!snap.metadata.fromCache) { clearTimeout(slow); notesStatus = "ok"; setSync("ok", "계정에 저장 중"); }
+      else if (notesStatus === "wait") notesStatus = "ok";
+      var ta = $("answer"), draft = ta && document.activeElement === ta ? ta.value : null;
+      paintNotes();
+      if (draft !== null && $("answer")) { $("answer").value = draft; $("answer").focus(); }
+    }, function () { clearTimeout(slow); notesStatus = "slow"; paintNotes(); setSync("local", "저장소 오류 · 이 기기에 임시 저장"); });
+    db.collection("log").orderBy("date", "desc").limit(14).onSnapshot(function (snap) {
+      snap.docs.forEach(function (doc) { var v = doc.data(); if (v && Array.isArray(v.steps)) logs[doc.id] = v.steps.slice(); });
+      paintRoutine();
+    }, function () {});
+    db.doc("state/main").onSnapshot(function (doc) {
+      if (!doc.exists) return;
+      var v = doc.data() || {};
+      state.known = Array.isArray(v.known) ? v.known.slice() : state.known;
+      state.flags = Array.isArray(v.flags) ? v.flags.slice() : state.flags;
+      if (typeof v.name === "string" && document.activeElement !== nameEl) { state.name = v.name; nameEl.value = v.name; }
+      paintPhrases(); paintRepeat(); paintVocab(); paintIntro();
+    }, function () {});
+  }).catch(function () { clearTimeout(slow); notesStatus = "off"; paintNotes(); setSync("local", "이 기기에만 저장 중"); });
 })();
 </script>
