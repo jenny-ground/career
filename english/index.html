@@ -1,0 +1,532 @@
+<title>TMS 컨콜 영어 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow column like a shipping manifest; sticky section tabs on top; terms set like cargo codes. */
+:root {
+  --paper: #F1F4F7;
+  --surface: #FFFFFF;
+  --ink: #15212C;
+  --muted: #5A6774;
+  --line: #D3DBE3;
+  --accent: #1B5BA6;
+  --accent-soft: #E2EBF6;
+  --signal: #A85F00;
+  --signal-soft: #FBEFDD;
+  --ok: #2E7D4F;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0F161D; --surface: #17212B; --ink: #E5EBF0; --muted: #96A4B2; --line: #2A3743;
+    --accent: #77ABEA; --accent-soft: #1A2C42; --signal: #E8A34C; --signal-soft: #33260F; --ok: #6CC18F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0F161D; --surface: #17212B; --ink: #E5EBF0; --muted: #96A4B2; --line: #2A3743;
+  --accent: #77ABEA; --accent-soft: #1A2C42; --signal: #E8A34C; --signal-soft: #33260F; --ok: #6CC18F;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--f-body); font-size: 15px; line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--surface);
+}
+.wrap {
+  max-width: 720px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2 { font-family: var(--f-display); font-weight: 700; letter-spacing: .01em; text-wrap: balance; line-height: 1.1; margin: 0; }
+h1 { font-size: 2.4rem; }
+h2 { font-size: 1.7rem; }
+h3 { font-size: 1rem; margin: 0; font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: .86rem; }
+
+/* Header */
+header.top { background: var(--surface); border-bottom: 1px solid var(--line); }
+header.top .wrap { padding-block: 28px 20px; display: grid; gap: 10px; }
+.lede { color: var(--muted); max-width: 60ch; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.tag { font-family: var(--f-mono); font-size: .72rem; padding: 3px 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); }
+
+/* Sticky tabs */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+nav.tabs .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-block: 8px; align-items: center; }
+nav.tabs .wrap::-webkit-scrollbar { display: none; }
+nav.tabs a { flex: none; text-decoration: none; color: var(--ink); font-size: .88rem; padding: 6px 10px; border-radius: 6px; }
+nav.tabs a:hover, nav.tabs a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+.speed { flex: none; margin-left: auto; display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.speed button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: .8rem; padding: 5px 9px; cursor: pointer; }
+.speed button[aria-pressed="true"] { background: var(--accent); color: var(--surface); }
+
+main .wrap { display: grid; gap: 44px; padding-block: 32px 64px; }
+section { display: grid; gap: 16px; scroll-margin-top: 64px; }
+.sec-head { display: grid; gap: 6px; }
+
+/* Routine */
+.routine { display: grid; gap: 8px; }
+.step { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.step input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--ok); }
+.step .mins { font-family: var(--f-mono); font-size: .8rem; color: var(--accent); white-space: nowrap; }
+.step.done { opacity: .62; }
+.step.done h3 { text-decoration: line-through; }
+.step p { color: var(--muted); font-size: .9rem; margin-top: 2px; }
+.step a { color: var(--accent); }
+.progress { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: var(--muted); }
+.bar { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar span { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+
+/* Phrase groups */
+.group { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.group > .ghead { padding: 10px 14px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: .9rem; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line); align-items: center; }
+.group > .ghead + .row { border-top: 0; }
+.row .en { font-weight: 500; }
+.row .ko { color: var(--muted); font-size: .88rem; }
+.row > div { min-width: 0; }
+
+.say { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--accent); display: grid; place-items: center; cursor: pointer; }
+.say:hover, .say:focus-visible { border-color: var(--accent); outline: none; }
+.say.playing { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.say svg { width: 16px; height: 16px; }
+.no-tts .say { display: none; }
+
+/* Vocab */
+.vtools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { font: inherit; font-size: .85rem; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 7px 12px; border-radius: 6px; cursor: pointer; }
+.btn:hover, .btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.vcount { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); margin-left: auto; }
+.vocab { display: grid; gap: 8px; }
+.term { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.term > div { min-width: 0; }
+.term .word { font-family: var(--f-mono); font-size: 1rem; color: var(--ink); }
+.term .mean { color: var(--signal); font-weight: 600; font-size: .92rem; }
+.term .ex { color: var(--muted); font-size: .88rem; margin-top: 2px; }
+.term .actions { display: flex; gap: 6px; align-items: start; }
+.known { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.known svg { width: 16px; height: 16px; }
+.known[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.hide-mean .term .mean { color: transparent; background: var(--line); border-radius: 3px; user-select: none; cursor: pointer; }
+.hide-mean .term .mean.peek { color: var(--signal); background: transparent; }
+.vsub { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+
+/* Self-intro waybill */
+.waybill { background: var(--surface); border: 1.5px solid var(--ink); border-radius: 4px; }
+.wb-head { display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1.5px solid var(--ink); font-family: var(--f-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; flex-wrap: wrap; }
+.wb-field { padding: 12px 14px; border-bottom: 1px dashed var(--line); display: grid; gap: 6px; }
+.wb-field label { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.wb-field input { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); width: 100%; }
+.wb-field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.waybill .row:first-of-type { border-top: 0; }
+.wb-foot { padding: 12px 14px; display: flex; gap: 8px; flex-wrap: wrap; border-top: 1.5px solid var(--ink); }
+
+/* Emails */
+.mail { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.mail summary { cursor: pointer; padding: 14px; display: flex; justify-content: space-between; gap: 10px; align-items: center; list-style: none; }
+.mail summary::-webkit-details-marker { display: none; }
+.mail summary::after { content: "+"; font-family: var(--f-mono); color: var(--accent); font-size: 1.1rem; }
+.mail[open] summary::after { content: "−"; }
+.mail summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.mail .use { color: var(--muted); font-size: .85rem; font-weight: 400; }
+.mail pre { margin: 0; padding: 14px; border-top: 1px solid var(--line); background: var(--paper); font-family: var(--f-mono); font-size: .82rem; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.mail .mfoot { padding: 10px 14px; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.mail .note { color: var(--muted); font-size: .84rem; flex: 1 1 200px; }
+.tip { background: var(--signal-soft); border-radius: 8px; padding: 12px 14px; font-size: .9rem; }
+.tip strong { color: var(--signal); }
+
+/* Roadmap */
+.road { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 6px; }
+.leg { position: relative; padding: 0 0 22px 22px; display: grid; gap: 4px; }
+.leg::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--accent); }
+.leg:last-child { padding-bottom: 0; }
+.leg .wk { font-family: var(--f-display); font-weight: 600; font-size: 1.15rem; color: var(--accent); }
+.leg ul { margin: 2px 0 0; padding-left: 18px; color: var(--muted); font-size: .9rem; }
+
+/* Prompts */
+.prompts { display: grid; gap: 8px; }
+.prompt { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.prompt > div { min-width: 0; }
+.prompt code { font-family: var(--f-mono); font-size: .86rem; color: var(--accent); word-break: break-word; }
+.prompt p { color: var(--muted); font-size: .86rem; }
+
+footer .wrap { padding-block: 0 40px; color: var(--muted); font-size: .82rem; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 6px; font-size: .85rem; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+.toast.show { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+@media (min-width: 640px) { h1 { font-size: 3rem; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <span class="eyebrow">Shipper · Carrier · Conference call</span>
+    <h1>TMS 컨콜 영어 노트</h1>
+    <p class="lede">카길과의 컨콜을 위한 하루 30분 학습 노트예요. 운송·TMS 업무에서 실제로 쓰는 표현만 모았어요. 스피커 버튼을 누르면 원어민 발음으로 들을 수 있어요.</p>
+    <div class="meta-row">
+      <span class="tag">하루 30분</span>
+      <span class="tag">8주 과정</span>
+      <span class="tag">번역기 없이 메일 쓰기가 목표</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="섹션">
+  <div class="wrap">
+    <a href="#today">오늘 루틴</a>
+    <a href="#phrases">생존 표현</a>
+    <a href="#vocab">업무 용어</a>
+    <a href="#intro">자기소개</a>
+    <a href="#mail">메일</a>
+    <a href="#plan">8주 계획</a>
+    <a href="#claude">Claude 활용</a>
+    <div class="speed" role="group" aria-label="읽기 속도">
+      <button type="button" id="spd-slow" data-rate="0.7" aria-pressed="true">천천히</button>
+      <button type="button" id="spd-norm" data-rate="0.95" aria-pressed="false">보통</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <section id="today">
+      <div class="sec-head">
+        <span class="eyebrow" id="today-date">Today</span>
+        <h2>오늘의 30분</h2>
+        <p class="muted small">매일 같은 순서로 하세요. 체크는 이 휴대폰에만 저장되고 다음 날 초기화돼요.</p>
+      </div>
+      <div class="progress"><div class="bar"><span id="bar"></span></div><span id="bar-txt">0 / 4</span></div>
+      <div class="routine" id="routine"></div>
+    </section>
+
+    <section id="phrases">
+      <div class="sec-head">
+        <span class="eyebrow">Survival phrases</span>
+        <h2>컨콜 생존 표현</h2>
+        <p class="muted small">못 알아들어도 괜찮아요. 아래 문장으로 다시 물어보면 돼요. 첫 2주 동안 이 15개만 입에 붙여도 컨콜이 훨씬 편해져요.</p>
+      </div>
+      <div id="phrase-groups" style="display:grid;gap:12px"></div>
+      <p class="tip"><strong>컨콜 팁</strong> · Teams나 Zoom의 실시간 자막(Live captions)을 켜세요. 들리지 않는 단어를 눈으로 잡을 수 있어요.</p>
+    </section>
+
+    <section id="vocab">
+      <div class="sec-head">
+        <span class="eyebrow">TMS glossary</span>
+        <h2>운송·TMS 업무 용어</h2>
+        <p class="muted small">뜻을 가리고 스스로 테스트해 보세요. 가려진 뜻을 누르면 잠깐 보여요. 외운 단어는 체크하세요.</p>
+      </div>
+      <div class="vtools">
+        <button type="button" class="btn" id="hide-btn" aria-pressed="false">뜻 가리기</button>
+        <button type="button" class="btn" id="unknown-btn" aria-pressed="false">못 외운 것만</button>
+        <span class="vcount" id="vcount">0 / 0 외움</span>
+      </div>
+      <div class="vocab" id="vocab-list"></div>
+    </section>
+
+    <section id="intro">
+      <div class="sec-head">
+        <span class="eyebrow">Self-introduction</span>
+        <h2>첫 컨콜 자기소개</h2>
+        <p class="muted small">첫 통화에서 이것만 말해도 충분해요. 이름을 넣으면 그대로 읽어줘요. 통째로 외우세요.</p>
+      </div>
+      <div class="waybill">
+        <div class="wb-head"><span>Introduction slip</span><span>Approx. 30 sec</span></div>
+        <div class="wb-field">
+          <label for="my-name">Your name (영어 이름 또는 본명)</label>
+          <input id="my-name" type="text" placeholder="예: Jiwon Kim" autocomplete="name">
+        </div>
+        <div id="intro-lines"></div>
+        <div class="wb-foot">
+          <button type="button" class="btn" id="intro-all">전체 듣기</button>
+          <button type="button" class="btn" id="intro-copy">영어 문장 복사</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="mail">
+      <div class="sec-head">
+        <span class="eyebrow">Email templates</span>
+        <h2>자주 쓰는 메일 4종</h2>
+        <p class="muted small">[ ] 안만 바꿔 쓰세요. 번역기 대신 이 틀을 쓰는 연습이 쓰기 실력을 가장 빨리 올려요.</p>
+      </div>
+      <div id="mails" style="display:grid;gap:10px"></div>
+      <p class="tip"><strong>시차 주의</strong> · 미국 중부 시간(CST)은 지금 한국보다 15시간 느려요(서머타임이 시작되는 3월부터는 14시간). 한국 오전 9시 = 미국 중부 전날 오후 6시. 상대방이 어느 지역인지 먼저 확인하세요.</p>
+    </section>
+
+    <section id="plan">
+      <div class="sec-head">
+        <span class="eyebrow">Route plan</span>
+        <h2>8주 학습 경로</h2>
+        <p class="muted small">컨콜 날짜가 정해지면 그 주부터는 실제 안건 준비를 우선해요.</p>
+      </div>
+      <div class="road">
+        <div class="leg"><span class="wk">1–2주 · 생존 세트</span>
+          <ul><li>자기소개 통째로 외우기</li><li>컨콜 생존 표현 15개</li><li>운송 기본 용어 14개</li></ul></div>
+        <div class="leg"><span class="wk">3–4주 · 메일 쓰기</span>
+          <ul><li>메일 템플릿 4종을 번역기 없이 바꿔 쓰기</li><li>매일 메일 3문장 쓰고 Claude에게 첨삭받기</li></ul></div>
+        <div class="leg"><span class="wk">5–6주 · 업무 설명하기</span>
+          <ul><li>시스템 용어 10개</li><li>배차 흐름, 정산 흐름을 영어로 1분 동안 설명하기</li><li>화면 공유하며 기능 설명하는 표현</li></ul></div>
+        <div class="leg"><span class="wk">7–8주 · 실전 롤플레이</span>
+          <ul><li>Claude와 컨콜 롤플레이: 요구사항 협의, 일정 조율, 이슈 보고</li><li>회의 후 요약 메일 직접 쓰기</li></ul></div>
+        <div class="leg"><span class="wk">그 이후 · 실전 사이클</span>
+          <ul><li>컨콜 전: 안건을 Claude에게 주고 예상 표현 준비</li><li>컨콜 후: 메모로 복습하고 요약 메일 첨삭</li></ul></div>
+      </div>
+    </section>
+
+    <section id="claude">
+      <div class="sec-head">
+        <span class="eyebrow">Study with Claude</span>
+        <h2>Claude에게 이렇게 말하세요</h2>
+        <p class="muted small">복사해서 Claude 대화창에 붙여넣으면 바로 시작해요.</p>
+      </div>
+      <div class="prompts" id="prompts"></div>
+    </section>
+
+  </div>
+</main>
+
+<footer><div class="wrap">스피커 버튼은 휴대폰에 설치된 영어 음성을 써요. 소리가 안 나면 무음 모드를 확인하세요.</div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem("tmsen:" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem("tmsen:" + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  var ICON_SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+  var ICON_CHK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function toast(msg) { var t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 1600); }
+
+  /* ---------- Speech ---------- */
+  var hasTTS = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  if (!hasTTS) document.documentElement.classList.add("no-tts");
+  var rate = store.get("rate", 0.7);
+  var voice = null;
+  function pickVoice() {
+    if (!hasTTS) return;
+    var vs = speechSynthesis.getVoices() || [];
+    voice = vs.filter(function (v) { return v.lang === "en-US"; })[0] || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
+  }
+  if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  var playingBtn = null;
+  function speak(text, btn, onend) {
+    if (!hasTTS) return;
+    speechSynthesis.cancel();
+    if (playingBtn) playingBtn.classList.remove("playing");
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US"; u.rate = rate; if (voice) u.voice = voice;
+    if (btn) { btn.classList.add("playing"); playingBtn = btn; }
+    u.onend = u.onerror = function () { if (btn) btn.classList.remove("playing"); if (onend) onend(); };
+    speechSynthesis.speak(u);
+  }
+  function sayBtn(text) { return '<button type="button" class="say" data-say="' + esc(text) + '" aria-label="듣기: ' + esc(text) + '">' + ICON_SPK + "</button>"; }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".say"); if (!b) return;
+    speak(b.getAttribute("data-say"), b);
+  });
+  var spdBtns = document.querySelectorAll(".speed button");
+  function setRate(r) { rate = r; store.set("rate", r); spdBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(parseFloat(b.dataset.rate) === r)); }); }
+  spdBtns.forEach(function (b) { b.addEventListener("click", function () { setRate(parseFloat(b.dataset.rate)); }); });
+  setRate(rate);
+
+  /* ---------- Today routine ---------- */
+  var today = new Date();
+  var dayKey = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  document.getElementById("today-date").textContent = today.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long" });
+  var steps = [
+    { m: "5분", t: "듣고 따라 말하기", d: "생존 표현이나 업무 용어 5개를 스피커로 듣고 3번씩 소리 내 따라 하세요." },
+    { m: "10분", t: "듣기", d: '영어 자막을 켜고 5분 이내 영상 하나를 두 번 보세요. 예: <a href="https://www.youtube.com/results?search_query=business+english+conference+call+phrases" target="_blank" rel="noopener">컨콜 영어</a>, <a href="https://www.youtube.com/results?search_query=logistics+english+vocabulary" target="_blank" rel="noopener">물류 영어</a>' },
+    { m: "10분", t: "쓰기", d: "오늘 배운 표현으로 메일 3문장을 쓰고 Claude에게 첨삭받으세요." },
+    { m: "5분", t: "말하기", d: "자기소개를 소리 내 읽고 휴대폰으로 녹음해서 들어보세요." }
+  ];
+  var done = store.get("routine:" + dayKey, []);
+  var rEl = document.getElementById("routine");
+  rEl.innerHTML = steps.map(function (s, i) {
+    return '<label class="step" for="rt-' + i + '"><input type="checkbox" id="rt-' + i + '" data-i="' + i + '"><div><h3>' + s.t + "</h3><p>" + s.d + '</p></div><span class="mins">' + s.m + "</span></label>";
+  }).join("");
+  function paintRoutine() {
+    var n = 0;
+    rEl.querySelectorAll("input").forEach(function (c) { var on = done.indexOf(+c.dataset.i) > -1; c.checked = on; c.closest(".step").classList.toggle("done", on); if (on) n++; });
+    document.getElementById("bar").style.width = (n / steps.length * 100) + "%";
+    document.getElementById("bar-txt").textContent = n === steps.length ? "오늘 완료!" : n + " / " + steps.length;
+  }
+  rEl.addEventListener("change", function (e) {
+    var i = +e.target.dataset.i; var k = done.indexOf(i);
+    if (e.target.checked && k < 0) done.push(i); if (!e.target.checked && k > -1) done.splice(k, 1);
+    store.set("routine:" + dayKey, done); paintRoutine();
+  });
+  paintRoutine();
+
+  /* ---------- Phrases ---------- */
+  var phrases = [
+    ["못 알아들었을 때", [
+      ["Sorry, could you say that again?", "죄송한데, 다시 말씀해 주시겠어요?"],
+      ["Could you speak a little more slowly, please?", "조금만 천천히 말씀해 주시겠어요?"],
+      ["Sorry, the line is not very clear.", "연결 상태가 안 좋아서 잘 안 들려요."]]],
+    ["내용을 확인할 때", [
+      ["Just to confirm, you mean the pickup time, right?", "확인차 여쭤보면, 픽업 시간 말씀하시는 거죠?"],
+      ["So the deadline is next Friday, correct?", "그러니까 마감이 다음 주 금요일 맞죠?"],
+      ["Could you send that by email after the call?", "통화 끝나고 메일로 보내주실 수 있나요?"]]],
+    ["생각할 시간이 필요할 때", [
+      ["Give me a second, please.", "잠시만요."],
+      ["Let me check and get back to you.", "확인하고 다시 알려드릴게요."],
+      ["Can we discuss this internally first?", "내부적으로 먼저 논의해 봐도 될까요?"]]],
+    ["의견을 말할 때", [
+      ["I think that works for us.", "저희 쪽은 괜찮을 것 같아요."],
+      ["I have a concern about the schedule.", "일정이 조금 걱정돼요."],
+      ["Let me share my screen.", "제 화면 공유할게요."]]],
+    ["마무리할 때", [
+      ["Let me summarize what we agreed.", "합의한 내용 정리해 볼게요."],
+      ["I'll send a follow-up email today.", "오늘 후속 메일 보내드릴게요."],
+      ["Thank you for your time. Talk to you next week.", "시간 내주셔서 감사합니다. 다음 주에 뵐게요."]]]
+  ];
+  document.getElementById("phrase-groups").innerHTML = phrases.map(function (g) {
+    return '<div class="group"><div class="ghead">' + g[0] + "</div>" + g[1].map(function (p) {
+      return '<div class="row"><div><div class="en">' + esc(p[0]) + '</div><div class="ko">' + p[1] + "</div></div>" + sayBtn(p[0]) + "</div>";
+    }).join("") + "</div>";
+  }).join("");
+
+  /* ---------- Vocab ---------- */
+  var vocab = [
+    ["운송 기본", [
+      ["shipper", "화주", "The shipper requested a pickup on Monday."],
+      ["consignee", "수하인 (받는 쪽)", "The consignee confirmed the delivery."],
+      ["carrier", "운송사", "We assign a carrier to each shipment."],
+      ["shipment", "운송 건, 화물", "This shipment is delayed by one day."],
+      ["dispatch", "배차", "The dispatch team assigns trucks every morning."],
+      ["pickup / delivery", "상차(픽업) / 배송", "Pickup is at 9 a.m. and delivery is at 3 p.m."],
+      ["lead time", "리드타임", "The lead time is three days."],
+      ["ETA", "도착 예정 시간 (Estimated Time of Arrival)", "What is the ETA for this truck?"],
+      ["POD", "배송 완료 증빙 (Proof of Delivery)", "The driver uploads the POD in the app."],
+      ["freight rate", "운임", "The freight rate depends on distance and weight."],
+      ["surcharge", "할증료", "There is a fuel surcharge this month."],
+      ["lane", "운송 구간 (출발지–도착지)", "We have ten trucks on this lane."],
+      ["FTL / LTL", "독차 / 혼적", "Is this an FTL or an LTL shipment?"],
+      ["tracking", "화물 추적", "Customers want real-time tracking."]]],
+    ["시스템·기획", [
+      ["requirement", "요구사항", "Could you share the requirements by email?"],
+      ["feature", "기능", "This feature is planned for the next release."],
+      ["workflow", "업무 흐름", "Let me explain the dispatch workflow."],
+      ["integration", "시스템 연동", "We need an API integration with your ERP."],
+      ["scope", "범위", "This is out of scope for phase one."],
+      ["settlement", "정산", "Settlement is done at the end of each month."],
+      ["go-live", "오픈, 가동", "The go-live date is March 2."],
+      ["UAT", "사용자 인수 테스트", "UAT will start next week."],
+      ["issue", "이슈, 문제", "We found an issue on the settlement screen."],
+      ["priority", "우선순위", "Which feature is the top priority?"]]]
+  ];
+  var known = store.get("known", []);
+  var hideMean = store.get("hide", false), onlyUnknown = false;
+  var total = vocab.reduce(function (n, g) { return n + g[1].length; }, 0);
+  var vEl = document.getElementById("vocab-list");
+  vEl.innerHTML = vocab.map(function (g) {
+    return '<div class="vsub">' + g[0] + "</div>" + g[1].map(function (w) {
+      return '<div class="term" data-w="' + esc(w[0]) + '"><div><div class="word">' + esc(w[0]) + '</div><div class="mean">' + esc(w[1]) + '</div><div class="ex">' + esc(w[2]) + '</div></div><div class="actions">' +
+        sayBtn(w[0].replace(" / ", ", ") + ". " + w[2]) + '<button type="button" class="known" aria-pressed="false" aria-label="외움 표시: ' + esc(w[0]) + '">' + ICON_CHK + "</button></div></div>";
+    }).join("");
+  }).join("");
+  function paintVocab() {
+    vEl.classList.toggle("hide-mean", hideMean);
+    document.getElementById("hide-btn").setAttribute("aria-pressed", String(hideMean));
+    document.getElementById("unknown-btn").setAttribute("aria-pressed", String(onlyUnknown));
+    var n = 0;
+    vEl.querySelectorAll(".term").forEach(function (t) {
+      var k = known.indexOf(t.dataset.w) > -1; if (k) n++;
+      t.querySelector(".known").setAttribute("aria-pressed", String(k));
+      t.hidden = onlyUnknown && k;
+    });
+    document.getElementById("vcount").textContent = n + " / " + total + " 외움";
+  }
+  vEl.addEventListener("click", function (e) {
+    var kb = e.target.closest(".known");
+    if (kb) { var w = kb.closest(".term").dataset.w; var i = known.indexOf(w); if (i > -1) known.splice(i, 1); else known.push(w); store.set("known", known); paintVocab(); return; }
+    var m = e.target.closest(".mean"); if (m && hideMean) m.classList.toggle("peek");
+  });
+  document.getElementById("hide-btn").addEventListener("click", function () { hideMean = !hideMean; store.set("hide", hideMean); paintVocab(); });
+  document.getElementById("unknown-btn").addEventListener("click", function () { onlyUnknown = !onlyUnknown; paintVocab(); });
+  paintVocab();
+
+  /* ---------- Self intro ---------- */
+  var nameEl = document.getElementById("my-name");
+  nameEl.value = store.get("name", "");
+  var introLines = [
+    ["Hi, my name is {name}.", "안녕하세요, 저는 {name}입니다."],
+    ["I'm a planner for our TMS, our transportation management system.", "저는 저희 TMS(운송 관리 시스템) 기획자예요."],
+    ["I design features like dispatch, tracking, and freight settlement.", "배차, 화물 추적, 운임 정산 같은 기능을 설계해요."],
+    ["In this project, I will work on the requirements and screen design.", "이번 프로젝트에서는 요구사항과 화면 설계를 맡아요."],
+    ["My English is still improving, so I may ask you to repeat things.", "영어가 아직 서툴러서 다시 말씀해 달라고 할 수도 있어요."],
+    ["Thank you for your patience. I look forward to working with you.", "이해해 주셔서 감사하고, 함께 일하게 되어 기대돼요."]
+  ];
+  function nm() { return nameEl.value.trim() || "Kim"; }
+  function introText(i) { return introLines[i][0].replace("{name}", nm()); }
+  var ilEl = document.getElementById("intro-lines");
+  function paintIntro() {
+    ilEl.innerHTML = introLines.map(function (l, i) {
+      var en = introText(i);
+      return '<div class="row"><div><div class="en">' + esc(en) + '</div><div class="ko">' + esc(l[1].replace("{name}", nm())) + "</div></div>" + sayBtn(en) + "</div>";
+    }).join("");
+  }
+  nameEl.addEventListener("input", function () { store.set("name", nameEl.value); paintIntro(); });
+  paintIntro();
+  document.getElementById("intro-all").addEventListener("click", function () {
+    if (!hasTTS) { toast("이 기기에서는 음성 읽기를 지원하지 않아요"); return; }
+    speak(introLines.map(function (_, i) { return introText(i); }).join(" "), null);
+  });
+  function copy(text, okMsg) {
+    var done = function () { toast(okMsg || "복사했어요"); };
+    try {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+    } catch (e) { fallbackCopy(text); done(); }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta);
+  }
+  document.getElementById("intro-copy").addEventListener("click", function () { copy(introLines.map(function (_, i) { return introText(i); }).join("\n")); });
+
+  /* ---------- Mails ---------- */
+  var mails = [
+    ["회의 요청", "컨콜 일정을 잡을 때", "Subject: Meeting request – TMS requirements\n\nHi [Name],\n\nCould we schedule a call to discuss the TMS requirements?\nI'm available on [Tuesday or Wednesday], [9–11 a.m.] (KST).\nPlease let me know what time works for you.\n\nBest regards,\n[Your name]", "KST = 한국 시간. 시간대를 꼭 같이 적어주세요."],
+    ["내용 확인", "회의 내용이 헷갈릴 때", "Subject: Quick question about [topic]\n\nHi [Name],\n\nThank you for the call today.\nI'd like to confirm one point.\nDid you mean that [the pickup time will change to 10 a.m.]?\nPlease correct me if I misunderstood.\n\nBest regards,\n[Your name]", "컨콜에서 못 알아들은 부분은 이 메일로 확인하면 돼요."],
+    ["자료 요청", "문서나 데이터가 필요할 때", "Subject: Request for [document]\n\nHi [Name],\n\nCould you share the [shipment data] by [Friday, May 8]?\nIt will help us prepare for the next meeting.\nThank you in advance.\n\nBest regards,\n[Your name]", "날짜는 '요일, 월 일' 순서로 쓰면 헷갈리지 않아요."],
+    ["회의 후 요약", "컨콜이 끝난 직후", "Subject: Meeting summary – [date]\n\nHi all,\n\nThank you for joining the call today.\nHere is a short summary.\n\n1. [We agreed to add a POD upload feature.]\n2. [The go-live date is March 2.]\n\nNext steps:\n- [Our team] will [share the screen design] by [date].\n- [Your team] will [send the sample data] by [date].\n\nPlease let me know if I missed anything.\n\nBest regards,\n[Your name]", "이 메일을 먼저 보내면, 못 알아들은 부분을 상대가 바로잡아 줘요."]
+  ];
+  document.getElementById("mails").innerHTML = mails.map(function (m, i) {
+    return '<details class="mail"' + (i === 0 ? " open" : "") + '><summary><span><strong>' + m[0] + '</strong> <span class="use">· ' + m[1] + "</span></span></summary><pre>" + esc(m[2]) + '</pre><div class="mfoot"><span class="note">' + m[3] + '</span><button type="button" class="btn" data-mail="' + i + '">복사</button></div></details>';
+  }).join("");
+  document.getElementById("mails").addEventListener("click", function (e) { var b = e.target.closest("[data-mail]"); if (b) copy(mails[+b.dataset.mail][2]); });
+
+  /* ---------- Prompts ---------- */
+  var prompts = [
+    ["오늘 영어 공부하자", "오늘의 30분 학습 내용을 받아요"],
+    ["이 메일 첨삭해줘: ", "쓴 영어 메일을 붙여서 보내세요"],
+    ["컨콜 롤플레이 하자. 주제: 배차 요구사항 협의", "Claude가 카길 담당자 역할을 해요"],
+    ["컨콜 준비해줘. 안건: ", "안건을 주면 예상 질문과 표현을 정리해요"],
+    ["컨콜 복습하자. 메모: ", "회의 메모로 못 알아들은 부분을 풀어요"]
+  ];
+  document.getElementById("prompts").innerHTML = prompts.map(function (p, i) {
+    return '<div class="prompt"><div><code>' + esc(p[0]) + "</code><p>" + p[1] + '</p></div><button type="button" class="btn" data-prompt="' + i + '">복사</button></div>';
+  }).join("");
+  document.getElementById("prompts").addEventListener("click", function (e) { var b = e.target.closest("[data-prompt]"); if (b) copy(prompts[+b.dataset.prompt][0]); });
+})();
+</script>
